@@ -12,23 +12,26 @@ client = discord.Client(intents=intents)
 global responseold
 @client.event
 async def on_ready():
-	task_loop.start() # important to start the loop
+	pepito_loop.start()
 	print(f'We have logged in as {client.user}')
 
+# START: LOOPS 
+# START: PEPITO LOOP 
 @tasks.loop(seconds=15)
-async def task_loop():
+async def pepito_loop():
 	channel = client.get_channel(1525694299881083021)
 	global responseold
 
 	response = requests.get("https://api.thecatdoor.com/rest/v1/last-status")
 	responsejson = response.json()
 	if 'responseold' not in globals():
-			print("first run, just saving pepito info")
-			responseold = "empty"
+			print("PEPITO: first run, just saving pepito info")
+			#responseold = "empty" 
+			responseold = responsejson['type'] # uncomment this and comment the line above to make him not send first pepito message
 	else:
 			if responsejson['type'] != responseold:
-				print(f"RESPONSEOLD={responseold}")
-				print(f"RESPONSE={responsejson}")
+				#print(f"PEPITO: RESPONSEOLD={responseold}")
+				#print(f"PEPITO: RESPONSE={responsejson}")
 				responseold = responsejson['type']
 				embed = discord.Embed()
 				embed.set_image(url=responsejson['img'])
@@ -37,23 +40,36 @@ async def task_loop():
 				else:
 					pepitocurrently = 'gone for an adventure.\nHe was last seen about'
 				await channel.send(f'Pepito has {pepitocurrently} <t:{responsejson['time']}:R> (<t:{responsejson['time']}:t>)', embed=embed)
-			else:
-				print(f"no reason to update he hasnt changed ({responsejson['type']})")
+			#else:
+				#print(f"PEPITO: no reason to update he hasnt changed ({responsejson['type']})")
+# END: PEPITO LOOP 
+# END: LOOPS 
+
 @client.event
 async def on_message(message):
 	if message.author == client.user:
 		return
 
+# START: PEPITO COMMAND 
 	if message.content.startswith('!pepito'):
 		response = requests.get("https://api.thecatdoor.com/rest/v1/last-status")
 		response = response.json()
-		embed = discord.Embed()
-		embed.set_image(url=response['img'])
 		if response['type'] == 'in':
 			pepitocurrently = 'in his home'
 		else:
-			pepitocurrently = 'out on an adventure'
-		await message.channel.send(f'Pepito is currently {pepitocurrently}.\nHe was last seen about <t:{response['time']}:R> (<t:{response['time']}:t>)', embed=embed)
+			pepitocurrently = 'on an adventure'
+		embed = discord.Embed(title=f'Pepito is currently {pepitocurrently}.', description=f'He was last seen about <t:{response['time']}:R> (<t:{response['time']}:t>)')
+		embed.set_image(url=response['img'])
+		await message.channel.send(embed=embed)
+# END: PEPITO COMMAND 
+# START: RORY COMMAND 
+	elif message.content.startswith('!rory'):
+		response = requests.get("https://rory.cat/purr")
+		response = response.json()
+		embed = discord.Embed(title=f"Rory ID: {response['id']}", url=f"https://rory.cat/id/{response['id']}")
+		embed.set_image(url=response['url'])
+		await message.channel.send(embed=embed)
+# END: RORY COMMAND 
 
 client.run(os.environ['BOT_TOKEN'])
 
