@@ -36,10 +36,12 @@ async def pepito_loop():
 				embed = discord.Embed()
 				embed.set_image(url=responsejson['img'])
 				if responsejson['type'] == 'in':
-					pepitocurrently = 'returned home!\nHe came home about'
+					pepitocurrently = 'returned home!'
+					pepitocurrently2 = 'He came home about'
 				else:
-					pepitocurrently = 'gone for an adventure.\nHe was last seen about'
-				await channel.send(f'Pepito has {pepitocurrently} <t:{responsejson['time']}:R> (<t:{responsejson['time']}:t>)', embed=embed)
+					pepitocurrently = 'gone for an adventure.'
+					pepitocurrently2 = 'He was last seen about'
+				await channel.send(title=f'Pepito has {pepitocurrently}', description=f'{pepitocurrently2} <t:{responsejson['time']}:R> (<t:{responsejson['time']}:t>)', embed=embed)
 			#else:
 				#print(f"PEPITO: no reason to update he hasnt changed ({responsejson['type']})")
 # END: PEPITO LOOP 
