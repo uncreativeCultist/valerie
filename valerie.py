@@ -1,4 +1,5 @@
-import requests
+import asyncio
+import requests_async
 import json
 from datetime import datetime
 import discord
@@ -22,8 +23,14 @@ async def pepito_loop():
 	channel = client.get_channel(1525694299881083021)
 	global responseold
 
-	response = requests.get("https://api.thecatdoor.com/rest/v1/last-status")
-	responsejson = response.json()
+	try:
+		response = await requests_async.get("https://api.thecatdoor.com/rest/v1/last-status", timeout=5)
+		responsejson = response.json()
+		return response
+	except:
+	        print(f"Can't locate Pepito... I think the API is down. :(")
+	        return None
+
 	if 'responseold' not in globals():
 			print("PEPITO: first run, just saving pepito info")
 			#responseold = "empty" 
@@ -33,7 +40,7 @@ async def pepito_loop():
 				#print(f"PEPITO: RESPONSEOLD={responseold}")
 				#print(f"PEPITO: RESPONSE={responsejson}")
 				responseold = responsejson['type']
-				embed = discord.Embed()
+				embed = discord.Embed(title=f'Pepito has {pepitocurrently}', description=f'{pepitocurrently2} <t:{responsejson['time']}:R> (<t:{responsejson['time']}:t>)')
 				embed.set_image(url=responsejson['img'])
 				if responsejson['type'] == 'in':
 					pepitocurrently = 'returned home!'
@@ -41,7 +48,7 @@ async def pepito_loop():
 				else:
 					pepitocurrently = 'gone for an adventure.'
 					pepitocurrently2 = 'He was last seen about'
-				await channel.send(title=f'Pepito has {pepitocurrently}', description=f'{pepitocurrently2} <t:{responsejson['time']}:R> (<t:{responsejson['time']}:t>)', embed=embed)
+				await channel.send(embed=embed)
 			#else:
 				#print(f"PEPITO: no reason to update he hasnt changed ({responsejson['type']})")
 # END: PEPITO LOOP 
@@ -54,8 +61,14 @@ async def on_message(message):
 
 # START: PEPITO COMMAND 
 	if message.content.startswith('!pepito'):
-		response = requests.get("https://api.thecatdoor.com/rest/v1/last-status")
-		response = response.json()
+		try:
+			response = await requests_async.get("https://api.thecatdoor.com/rest/v1/last-status", timeout=5)
+			response = response.json()
+			return response
+		except:
+		        print(f"Can't locate Pepito... I think the API is down. :(")
+		        await message.channel.send("Can't locate Pepito... I think the API is down. :(")
+		        return None
 		if response['type'] == 'in':
 			pepitocurrently = 'in his home'
 		else:
@@ -66,7 +79,7 @@ async def on_message(message):
 # END: PEPITO COMMAND 
 # START: RORY COMMAND 
 	elif message.content.startswith('!rory'):
-		response = requests.get("https://rory.cat/purr")
+		response = await requests_async.get("https://rory.cat/purr", timeout=5)
 		response = response.json()
 		embed = discord.Embed(title=f"Rory ID: {response['id']}", url=f"https://rory.cat/id/{response['id']}")
 		embed.set_image(url=response['url'])
