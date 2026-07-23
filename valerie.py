@@ -86,6 +86,19 @@ async def on_message(message):
 		embed.set_image(url=responsejson['url'])
 		await message.channel.send(embed=embed)
 # END: RORY COMMAND 
+# START: FMHY COMMANDS
+	# im well aware that this is horrible coding practice. fuck you. if you hate it, make a pr.
+	elif message.content.startswith('!fmhy video'):
+		await message.channel.send('https://fmhy.net/video')
+	elif message.content.startswith('!fmhy audio'):
+		await message.channel.send('https://fmhy.net/audio')
+	elif message.content.startswith('!fmhy gam'): #gam allows for "gaming" or "games"
+		await message.channel.send('https://fmhy.net/gaming')
+	elif message.content.startswith('!fmhy read'): #read allows for "read" or "reading"
+		await message.channel.send('https://fmhy.net/reading')
+	elif message.content.startswith('!fmhy'):
+		await message.channel.send('https://fmhy.net/beginners-guide')
+# END: FMHY COMMANDS
 
 client.run(os.environ['BOT_TOKEN'])
 
