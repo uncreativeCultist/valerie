@@ -63,26 +63,27 @@ async def on_message(message):
 	if message.content.startswith('!pepito'):
 		try:
 			response = await requests_async.get("https://api.thecatdoor.com/rest/v1/last-status", timeout=5)
-			response = response.json()
-			return response
+			responsejson = response.json()
 		except:
 		        print(f"Can't locate Pepito... I think the API is down. :(")
 		        await message.channel.send("Can't locate Pepito... I think the API is down. :(")
 		        return None
-		if response['type'] == 'in':
+		if responsejson['type'] == 'in':
 			pepitocurrently = 'in his home'
+			pepitocurrently2 = 'He came home about'
 		else:
 			pepitocurrently = 'on an adventure'
-		embed = discord.Embed(title=f'Pepito is currently {pepitocurrently}.', description=f'He was last seen about <t:{response['time']}:R> (<t:{response['time']}:t>)')
-		embed.set_image(url=response['img'])
+			pepitocurrently2 = 'He was last seen about'
+		embed = discord.Embed(title=f'Pepito is currently {pepitocurrently}.', description=f'{pepitocurrently2} <t:{responsejson['time']}:R> (<t:{responsejson['time']}:t>)')
+		embed.set_image(url=responsejson['img'])
 		await message.channel.send(embed=embed)
 # END: PEPITO COMMAND 
 # START: RORY COMMAND 
 	elif message.content.startswith('!rory'):
 		response = await requests_async.get("https://rory.cat/purr", timeout=5)
-		response = response.json()
-		embed = discord.Embed(title=f"Rory ID: {response['id']}", url=f"https://rory.cat/id/{response['id']}")
-		embed.set_image(url=response['url'])
+		responsejson = response.json()
+		embed = discord.Embed(title=f"Rory ID: {responsejson['id']}", url=f"https://rory.cat/id/{responsejson['id']}")
+		embed.set_image(url=responsejson['url'])
 		await message.channel.send(embed=embed)
 # END: RORY COMMAND 
 
