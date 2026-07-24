@@ -26,7 +26,6 @@ async def pepito_loop():
 	try:
 		response = await requests_async.get("https://api.thecatdoor.com/rest/v1/last-status", timeout=5)
 		responsejson = response.json()
-		return response
 	except:
 	        print(f"Can't locate Pepito... I think the API is down. :(")
 	        return None
